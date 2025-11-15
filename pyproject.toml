@@ -1,0 +1,12 @@
+[project]
+name = "ktb-assign"
+version = "0.1.0"
+description = "FastAPI application used for the KTB assignment"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.104.0",
+    "pydantic>=2.0.0",
+    "pydantic[email]>=2.0.0",
+    "uvicorn>=0.24.0",
+]

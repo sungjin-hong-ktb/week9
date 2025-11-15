@@ -1,35 +1,9 @@
 from fastapi import HTTPException
-from datetime import datetime
-import zoneinfo
 
-KST = zoneinfo.ZoneInfo("Asia/Seoul")
-posts = [
-    {
-        "id": 1,
-        "title": "피곤한데 집에 갈까요?",
-        "content": "오늘 하루 너무 피곤했어요. 집에 가고 싶어요.",
-        "author_id": 123,
-        "author_name": "ned",
-        "created_at": "2025-11-13T10:30:00",
-        "updated_at": "2025-11-13T10:30:00",
-        "views": 42,
-        "likes": 5,
-    },
-    {
-        "id": 2,
-        "title": "저녁 뭐 먹을까요?",
-        "content": "저녁 메뉴 추천해주세요",
-        "author_id": 124,
-        "author_name": "ned",
-        "created_at": "2025-11-14T17:00:00",
-        "updated_at": "2025-11-14T17:00:00",
-        "views": 30,
-        "likes": 3,
-    }
-]
+from models import post_model
 
 def get_all_posts():
-    return {"data": posts}
+    return {"data": post_model.list_posts()}
 
 def get_post_by_id(post_id: int):
     if not post_id:
@@ -38,9 +12,7 @@ def get_post_by_id(post_id: int):
     if post_id <= 0:
         raise HTTPException(status_code=400, detail="유효하지 않은 게시글 ID입니다.")
 
-    post = next(
-        (post for post in posts if post["id"] == post_id), None
-    )
+    post = post_model.get_post(post_id)
 
     if not post:
         raise HTTPException(status_code=404, detail="게시글을 찾을 수 없습니다.")
@@ -71,24 +43,16 @@ def create_post(data: dict):
     if not author_name or not author_name.strip():
         raise HTTPException(status_code=400, detail="작성자 이름을 입력해주세요.")
 
-    new_id = max(post["id"] for post in posts) + 1 if posts else 1
-    new_post = {
-        "id": new_id,
-        "title": title.strip(),
-        "content": content.strip(),
-        "author_id": author_id,
-        "author_name": author_name.strip(),
-        "created_at": datetime.now(KST).isoformat(),
-        "updated_at": datetime.now(KST).isoformat(),
-        "views": 0,
-        "likes": 0,
-    }
-    posts.append(new_post)
+    new_post = post_model.create_post(
+        title=title.strip(),
+        content=content.strip(),
+        author_id=author_id,
+        author_name=author_name.strip(),
+    )
     return {"data": new_post}
 
-
 def update_post(post_id: int, data: dict):
-    post = next((post for post in posts if post["id"] == post_id), None)
+    post = post_model.get_post(post_id)
 
     if not post:
         raise HTTPException(status_code=404, detail="게시글을 찾을 수 없습니다.")
@@ -120,23 +84,20 @@ def update_post(post_id: int, data: dict):
             raise HTTPException(status_code=400, detail="작성자 이름을 입력해주세요.")
         new_author_name = stripped_author_name
 
-    updated_post = {
-        "title": new_title,
-        "content": new_content,
-        "author_id": data.get("author_id", post["author_id"]),
-        "author_name": new_author_name,
-        "updated_at": datetime.now(KST).isoformat(),
-    }
+    updated_post = post_model.update_post(
+        post_id,
+        title=new_title,
+        content=new_content,
+        author_name=new_author_name,
+        author_id=data.get("author_id", post["author_id"]),
+    )
 
-    post.update(updated_post)
-
-    return {"data": post}
+    return {"data": updated_post}
 
 def delete_post(post_id: int):
-    post = next((post for post in posts if post["id"] == post_id), None)
+    deleted = post_model.delete_post(post_id)
 
-    if not post:
+    if not deleted:
         raise HTTPException(status_code=404, detail="게시글을 찾을 수 없습니다.")
 
-    posts.remove(post)
     return {"message": "게시글이 삭제되었습니다."}

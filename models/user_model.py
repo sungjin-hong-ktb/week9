@@ -38,7 +38,6 @@ def update_user(
 
     return user
 
-
 def delete_user(user_id: int) -> bool:
     user = get_user(user_id)
     if not user:

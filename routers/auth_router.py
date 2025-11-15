@@ -1,10 +1,12 @@
 from fastapi import APIRouter
+
 from controllers import auth_controller
+from schemas import LoginRequest
 
 router = APIRouter()
 
 @router.post("/login")
-def login(data: dict):
+def login(data: LoginRequest):
     return auth_controller.login(data)
 
 @router.post("/logout")

@@ -10,6 +10,7 @@ type2/
 ├── main.py                # FastAPI 앱, 라우터 등록
 ├── routers/               # HTTP Layer: 요청/응답 스펙 정의
 ├── controllers/           # Service Layer: 검증 및 비즈니스 규칙
+├── schemas/               # Pydantic 모델: 요청/응답 스키마 및 검증
 ```
 
 ## 실행 방법
@@ -36,12 +37,12 @@ type2/
 
 ### 회원
 - `GET /users`, `GET /users/{id}` : 목록 및 단건 조회
-- `POST /users` : 닉네임(공백 금지, 10자 제한), 이메일(email-validator), 비밀번호(8~20자/대소문자/숫자/특수문자) 검증
+- `POST /users` : Pydantic 스키마로 닉네임(공백 금지, 10자 제한), 이메일, 비밀번호(8~20자/대소문자/숫자/특수문자) 검증
 - `PUT /users/{id}` : 수정 대상이 하나도 없으면 400
 - `DELETE /users/{id}` : 없는 회원 삭제 시 404
 
 ### 게시글
 - `GET /posts`, `GET /posts/{id}` : ID 유효성 검사 포함
-- `POST /posts` : 제목 26자 제한, 내용/작성자 필수, 생성·수정 시각(KST) 기록
-- `PUT /posts/{id}` : 비어 있는 값으로 수정 불가, 수정 시각 갱신
+- `POST /posts` : Pydantic 스키마로 제목 26자 제한, 내용/작성자 필수, 생성·수정 시각(KST) 기록
+- `PUT /posts/{id}` : Pydantic 스키마로 비어 있는 값으로 수정 불가, 수정 시각 갱신
 - `DELETE /posts/{id}` : 없는 게시글이면 404

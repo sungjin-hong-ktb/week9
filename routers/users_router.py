@@ -1,5 +1,7 @@
 from fastapi import APIRouter
+
 from controllers import user_controller
+from schemas import UserCreate, UserUpdate
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -12,11 +14,11 @@ def get_user(user_id: int):
     return user_controller.get_user_by_id(user_id)
 
 @router.post("/", status_code=201)
-def create_user(data: dict):
+def create_user(data: UserCreate):
     return user_controller.create_user(data)
 
 @router.put("/{user_id}")
-def update_user(user_id: int, data: dict):
+def update_user(user_id: int, data: UserUpdate):
     return user_controller.update_user(user_id, data)
 
 @router.delete("/{user_id}", status_code=204)

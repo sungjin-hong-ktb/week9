@@ -1,17 +1,16 @@
 from fastapi import HTTPException
 
+from schemas import LoginRequest
+
 users = [
     {"id": 1, "nickname": "Alice", "email": "alice@example.com", "password": "alicepwd"},
     {"id": 2, "nickname": "Bob", "email": "bob@example.com", "password": "bobpwd"},
     {"id": 3, "nickname": "Ned", "email": "ned@ktb.com", "password": "nedpwd"}
 ]
 
-def login(data: dict):
-    email = data.get("email")
-    password = data.get("password")
-
-    if not email or not password:
-        raise HTTPException(status_code=400, detail="이메일과 비밀번호를 모두 입력해주세요.")
+def login(data: LoginRequest):
+    email = data.email
+    password = data.password
 
     user = next(
         (user for user in users if user["email"] == email and user["password"] == password),
